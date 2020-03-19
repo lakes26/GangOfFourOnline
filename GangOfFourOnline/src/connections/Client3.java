@@ -49,18 +49,21 @@ public class Client3 {
                 gui.setGamestate(game);
                 gui.repaint();
 
-                while(choosingHand){
-                    choosingHand = gui.getChoosingHand();
-                    Thread.sleep(1000);
+                while(gui.getChoosingHand()){
+//                    System.out.println("waiting for hand");
+                    Thread.sleep(3000);
                 }
-
+                System.out.println("sending hand");
                 sendHand = gui.getPlayHand();
+                System.out.println("Hand sent");
+                gui.setChoosingHand(true);
 
                 oos.reset();
                 oos.writeObject(sendHand);
 
                 game = (Gamestate) ois.readObject();
                 gameOver = game.getGameOver();
+                Thread.sleep(3000);
             }
 
 

@@ -42,13 +42,23 @@ public class GUI implements ActionListener {
         //get hand from gamestate
 
         currentHand = gamestate.players[playerID].hand;
-
+        System.out.println(currentHand);
         //draw cards on screen
         for(int i = 0; i<currentHand.size(); i++){
+            Card theCard = currentHand.get(i);
+            int color = theCard.getColor();
             button card = new button(i);
-            card.setBackground(Color.black);
+
+            if(color == 0)
+                card.setBackground(Color.green);
+            else if(color == 1)
+                card.setBackground(Color.yellow);
+            else if(color == 2)
+                card.setBackground(Color.red);
+            else
+                card.setBackground(Color.blue);
             card.setForeground(Color.white);
-            card.setText(currentHand.get(i).toString());
+            card.setText(theCard.toString());
             card.addActionListener(new buttonListener(i));
             card.setMaximumSize(new Dimension(50, 50));
             cardsAtBottom.add(card);
@@ -68,6 +78,9 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("play hand");
+                Card sort1 = new Card(0,-1);
+                if(playHand.contains(sort1))
+                    playHand.remove(sort1);
                 choosingHand = false;
             } });
         sortValue.addActionListener(new ActionListener() {
@@ -106,9 +119,9 @@ public class GUI implements ActionListener {
         prevHand.setBackground(Color.gray);
         for(Card card : gamestate.getPrevHandCards()){
             JLabel card1 = new JLabel(card.toString());
-            playerLabel.setFont(new Font("Courier New", Font.PLAIN, 24));
-            playerLabel.setForeground(Color.black);
-            prevHand.add(playerLabel);
+            card1.setFont(new Font("Courier New", Font.PLAIN, 24));
+            card1.setForeground(Color.black);
+            prevHand.add(card1);
         }
         con.add(prevHand);
 
@@ -116,21 +129,49 @@ public class GUI implements ActionListener {
     }
 
     public void repaint(){
+        cardsAtBottom.revalidate();
+        cardsAtBottom.repaint();
+        prevHand.revalidate();
+        prevHand.repaint();
 
+        System.out.println("repainting ahha");
         currentHand = gamestate.players[playerID].hand;
         System.out.println(currentHand);
         cardsAtBottom.removeAll();
         //draw cards on screen
         for(int i = 0; i<currentHand.size(); i++){
+            Card theCard = currentHand.get(i);
+            int color = theCard.getColor();
             button card = new button(i);
-            card.setBackground(Color.black);
+
+            if(color == 0)
+                card.setBackground(Color.green);
+            else if(color == 1)
+                card.setBackground(Color.yellow);
+            else if(color == 2)
+                card.setBackground(Color.red);
+            else
+                card.setBackground(Color.blue);
             card.setForeground(Color.white);
-            card.setText(currentHand.get(i).toString());
+            card.setText(theCard.toString());
             card.addActionListener(new buttonListener(i));
             card.setMaximumSize(new Dimension(50, 50));
             cardsAtBottom.add(card);
         }
         con.add(cardsAtBottom);
+
+        for(Card card : gamestate.getPrevHandCards()){
+            JLabel card1 = new JLabel(card.toString());
+            card1.setFont(new Font("Courier New", Font.PLAIN, 24));
+            card1.setForeground(Color.black);
+            prevHand.add(card1);
+        }
+        con.add(prevHand);
+
+        cardsAtBottom.revalidate();
+        cardsAtBottom.repaint();
+        prevHand.revalidate();
+        prevHand.repaint();
     }
     public void setGamestate(Gamestate gamestate){
         this.gamestate = gamestate;
@@ -168,6 +209,9 @@ public class GUI implements ActionListener {
         public void actionPerformed(ActionEvent e) {
 
             Card card = currentHand.get(i);
+            Card sort1 = new Card(0,-1);
+            if(playHand.contains(sort1))
+                playHand.remove(sort1);
             if(playHand.contains(card)){
                 playHand.remove(card);
             }

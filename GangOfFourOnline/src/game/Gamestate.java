@@ -283,6 +283,8 @@ public class Gamestate implements Serializable{
 		else if(packet.getPlayerID() == this.currentPlayerID) {
 			
 			boolean canPass = true;
+
+			//if everyone has passed
 			if(this.currentPlayerID == this.lastPlayedID || this.lastPlayedID == -1) {
 				for(int i = 0; i < 3; i++) {
 					this.prevHand[i] = 0;
@@ -290,10 +292,13 @@ public class Gamestate implements Serializable{
 				this.prevHandCards.clear();
 				canPass = false;
 			}
-			
+
+			//if the person passes
 			if(packet.getCardsPlayed().size() == 0 && canPass) {
 				this.changeCurrentPlayer();
-			} else if(playCards(packet.getPlayerID(), packet.getCardsPlayed())) {
+			}
+			//else if the person plays something
+			else if(playCards(packet.getPlayerID(), packet.getCardsPlayed())) {
 				this.lastPlayedID = this.currentPlayerID;
 				if(this.isRoundOver()) {
 					this.clockwise = !this.clockwise;
