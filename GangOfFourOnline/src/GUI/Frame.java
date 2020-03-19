@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Frame extends JFrame {
-    Component component;
+
     public Frame()
     {
         this.setTitle("Gang of Four");

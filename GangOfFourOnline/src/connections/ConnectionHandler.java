@@ -21,7 +21,6 @@ public class ConnectionHandler extends Thread{
 	private ObjectInputStream objIn;
 	
 	private boolean active = true;
-	private Packet packet;
 	private Player player;
 	
 	public ConnectionHandler(Socket socket) {
@@ -66,14 +65,9 @@ public class ConnectionHandler extends Thread{
 		while(active) {
 			try {
 				ArrayList<Card> cards = (ArrayList<Card>) objIn.readObject();
-				System.out.println(cards);
 				this.sendPacketToQueue(cards);
 				Thread.sleep(1000);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
+			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -92,7 +86,7 @@ public class ConnectionHandler extends Thread{
 		if((cards.size() == 1) && (cards.get(0).getValue() == -1 || cards.get(0).getValue() == -2)) {
 			sortRequest = Math.abs(cards.get(0).getValue());
 		}
-		packet = new Packet(this.player.getPlayerID(), sortRequest, cards);
+		Packet packet = new Packet(this.player.getPlayerID(), sortRequest, cards);
 		Main.addPacketToQueue(packet);
 	}
 	

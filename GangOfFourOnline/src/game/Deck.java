@@ -8,21 +8,21 @@ public class Deck {
 	private int deckSize;
 	
 	public Deck() {
-		this.cards = new ArrayList<Card>();
-		Card card = new Card(0,0);
+		this.cards = new ArrayList<>();
+		Card card;
 		
-		cards.add(new Card(4, 1));
+		cards.add(new Card(4, 1, 1));
 		for(int i = 1; i < 11; i++) {
 			for(int j = 0; j < 3; j++) {
 				for(int k = 0; k < 2; k++) {
-					card = new Card(j, i);
+					card = new Card(j, i, k);
 					cards.add(card);
 				}
 				if(i == 10) {
 					if(j < 2) 
-						card = new Card(j, 11);
+						card = new Card(j, 11, 1);
 					else
-						card = new Card(j, 12);
+						card = new Card(j, 12, 1);
 					cards.add(card);
 				}
 			}

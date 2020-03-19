@@ -1,14 +1,12 @@
-package connections;
+package Client;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import game.*;
 import GUI.*;
 
-public class Client4 {
+public class Client2 {
 
     public static void main(String[] args) {
         try
@@ -25,11 +23,7 @@ public class Client4 {
             ObjectInputStream ois = new ObjectInputStream(dis);
 
 
-
-            //player Hand
-            List<Card> cards = new ArrayList<>();
-            List<Card> sendHand = new ArrayList<>();
-//            testSort.add(new Card(1, -1));
+            List<Card> sendHand;
 
             //get playerID
             int playerID = ois.readInt();
@@ -43,17 +37,20 @@ public class Client4 {
             gui = new GUI(playerID, game);
 
             //Gameloop
-            Boolean gameOver = false;
-            Boolean choosingHand = true;
+            boolean gameOver = false;
             while(!gameOver) {
                 gui.setGamestate(game);
                 gui.repaint();
 
-                while(gui.getChoosingHand()){
-//                    System.out.println("waiting for hand");
-                    Thread.sleep(3000);
+                while(game.getCurrentPlayerID() != playerID){
+                    game = (Gamestate) ois.readObject();
+                    gui.setGamestate(game);
+                    gui.repaint();
                 }
-                System.out.println("sending hand");
+
+                while(gui.getChoosingHand()){
+                    Thread.sleep(100);
+                }
                 sendHand = gui.getPlayHand();
                 System.out.println("Hand sent");
                 gui.setChoosingHand(true);
@@ -63,7 +60,7 @@ public class Client4 {
 
                 game = (Gamestate) ois.readObject();
                 gameOver = game.getGameOver();
-                Thread.sleep(3000);
+                Thread.sleep(100);
             }
 
 

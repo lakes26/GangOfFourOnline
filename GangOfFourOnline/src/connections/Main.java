@@ -1,27 +1,25 @@
 package connections;
 
+import game.Gamestate;
+import game.Player;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import game.Gamestate;
-import game.Player;
-
 public class Main {
-	private static ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
+	private static ArrayList<ConnectionHandler> connections = new ArrayList<>();
 	private static int LISTENING_PORT = 42022;
-	private static String ipAddress = "localhost";
-	private static Gamestate gamestate;
 	private static Player[] players = new Player[4];
-	private static LinkedList<Packet> packetQueue = new LinkedList<Packet>();
+	private static LinkedList<Packet> packetQueue = new LinkedList<>();
 	
-	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 
 		//create server
+		String ipAddress = "localhost";
 		ServerSocket ss = new ServerSocket(LISTENING_PORT, 5, InetAddress.getByName(ipAddress));
 
 		System.out.println("Listening on port " + LISTENING_PORT);
@@ -41,19 +39,18 @@ public class Main {
 		//start gamestate
 	    boolean running = true;
 
-		gamestate = new Gamestate(players);
+		Gamestate gamestate = new Gamestate(players);
 		gamestate.startGame();
 		System.out.println("Starting Game");
 
 	    while(running) {
 	    	//send initial gamestate
-			for(int i = 0; i <connections.size(); i++) {
-				connections.get(i).sendGamestate(gamestate);
+			for (ConnectionHandler connection : connections) {
+				connection.sendGamestate(gamestate);
 			}
 
 			//while game is not over continually poll for packets
 	    	while(!gamestate.getGameOver()) {
-//				System.out.println("waiting for packet");
 				Thread.sleep(1000);
 
 	    		if(packetQueue.size() > 0) {
@@ -61,9 +58,9 @@ public class Main {
 	    			gamestate.parsePacket(packetQueue.poll());
 
 		        	//connection handlers send out gamestate to each client
-		        	for(int i = 0; i < connections.size(); i++) {
-		        		connections.get(i).sendGamestate(gamestate);
-		        	}
+					for (ConnectionHandler connection : connections) {
+						connection.sendGamestate(gamestate);
+					}
 		        }
 	    	}
 
@@ -76,8 +73,8 @@ public class Main {
     		}
 	    }
 	    //close all connections
-		for(int i = 0; i <connections.size(); i++) {
-			connections.get(i).setActive(false);
+		for (ConnectionHandler connection : connections) {
+			connection.setActive(false);
 		}
 	    scnr.close();
 	}

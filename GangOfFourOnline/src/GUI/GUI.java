@@ -7,13 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GUI implements ActionListener {
 
-    private JFrame window;
     private Container con;
     private JPanel cardsAtBottom, miscButtons, prevHand;
     private JPanel infoAtTop;
@@ -29,7 +27,7 @@ public class GUI implements ActionListener {
         this.gamestate = gamestate;
 
         //create new Frame
-        window = new Frame();
+        JFrame window = new Frame();
 
         //get contentPane to draw stuff on
         con = window.getContentPane();
@@ -39,66 +37,105 @@ public class GUI implements ActionListener {
         cardsAtBottom.setBounds(0, 500, 1280, 185);
         cardsAtBottom.setBackground(Color.gray);
 
-        //get hand from gamestate
-
-        currentHand = gamestate.players[playerID].hand;
-        System.out.println(currentHand);
-        //draw cards on screen
-        for(int i = 0; i<currentHand.size(); i++){
-            Card theCard = currentHand.get(i);
-            int color = theCard.getColor();
-            button card = new button(i);
-
-            if(color == 0)
-                card.setBackground(Color.green);
-            else if(color == 1)
-                card.setBackground(Color.yellow);
-            else if(color == 2)
-                card.setBackground(Color.red);
-            else
-                card.setBackground(Color.blue);
-            card.setForeground(Color.white);
-            card.setText(theCard.toString());
-            card.addActionListener(new buttonListener(i));
-            card.setMaximumSize(new Dimension(50, 50));
-            cardsAtBottom.add(card);
-        }
-        con.add(cardsAtBottom);
-
         //sort, pass, play, buttons
         miscButtons = new JPanel(new GridLayout(1,4));
         miscButtons.setBounds(0, 400, 400, 100);
         miscButtons.setBackground(Color.gray);
 
-        //play and sortValue
-        JButton play = new JButton("Play Hand");
-        JButton sortValue = new JButton("Sort By Value");
-
-        play.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("play hand");
-                Card sort1 = new Card(0,-1);
-                if(playHand.contains(sort1))
-                    playHand.remove(sort1);
-                choosingHand = false;
-            } });
-        sortValue.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playHand.clear();
-                playHand.add(new Card(0, -1));
-                choosingHand = false;
-            } });
-        miscButtons.add(play);
-        miscButtons.add(sortValue);
-        con.add(miscButtons);
-
-
         //info at top
         infoAtTop = new JPanel();
         infoAtTop.setBounds(0, 0, 1280, 180);
         infoAtTop.setBackground(Color.gray);
+
+        //previous hand
+        prevHand = new JPanel();
+        prevHand.setBounds(400, 200, 500, 200);
+        prevHand.setBackground(Color.gray);
+
+        window.setVisible(true);
+    }
+
+    public void repaintMiscButtons(){
+        miscButtons.removeAll();
+
+        JButton play = new JButton("Play Hand");
+        play.addActionListener(e -> {
+            //only works if it is your turn
+            if(gamestate.getCurrentPlayerID() == playerID) {
+                System.out.println("Hand Played" + playHand);
+                Card sort1 = new Card(0, -1, 1);
+                playHand.remove(sort1);
+                choosingHand = false;
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                playHand.clear();
+            }
+        });
+
+        JButton sortValue = new JButton("Sort By Value");
+        sortValue.addActionListener(e -> {
+            playHand.clear();
+            playHand.add(new Card(0, -1, 1));
+            choosingHand = false;
+        });
+
+        miscButtons.add(play);
+        miscButtons.add(sortValue);
+        con.add(miscButtons);
+
+        miscButtons.revalidate();
+        miscButtons.repaint();
+    }
+
+    public void repaintCardsAtBottom(){
+        cardsAtBottom.removeAll();
+
+        for(int i = 0; i<currentHand.size(); i++){
+            Card theCard = currentHand.get(i);
+            button card = new button(i);
+
+            //set card background color
+            int color = theCard.getColor();
+            if(!playHand.contains(theCard)) {
+                if (color == 0)
+                    card.setBackground(new Color(0, 100, 0));
+                else if (color == 1)
+                    card.setBackground(new Color(150, 150, 0));
+                else if (color == 2)
+                    card.setBackground(new Color(150, 0, 0));
+                else
+                    card.setBackground(new Color(0, 0, 125));
+            }
+            else{
+                if (color == 0)
+                    card.setBackground(new Color(0, 255, 0));
+                else if (color == 1)
+                    card.setBackground(new Color(255, 255, 0));
+                else if (color == 2)
+                    card.setBackground(new Color(255, 0, 0));
+                else
+                    card.setBackground(new Color(0, 0, 255));
+            }
+
+            card.setForeground(Color.black);
+            card.setText(theCard.toString());
+            card.setFont(new Font("Courier New", Font.PLAIN, 15));
+            card.addActionListener(new buttonListener(i));
+            card.setMaximumSize(new Dimension(50, 50));
+            cardsAtBottom.add(card);
+        }
+
+        con.add(cardsAtBottom);
+        cardsAtBottom.revalidate();
+        cardsAtBottom.repaint();
+    }
+
+
+    public void repaintInfoAtTop(){
+        infoAtTop.removeAll();
 
         JLabel currentPlayerLabel = new JLabel("Current Player: " + gamestate.getCurrentPlayerID());
         currentPlayerLabel.setFont(new Font("Courier New", Font.PLAIN, 24));
@@ -109,70 +146,38 @@ public class GUI implements ActionListener {
         playerLabel.setFont(new Font("Courier New", Font.PLAIN, 24));
         playerLabel.setForeground(Color.black);
         infoAtTop.add(playerLabel);
+
+
         con.add(infoAtTop);
+        infoAtTop.revalidate();
+        infoAtTop.repaint();
+    }
 
 
-        //previous hand jpanel
+    public void repaintPrevHand(){
+        prevHand.removeAll();
 
-        prevHand = new JPanel();
-        prevHand.setBounds(400, 200, 500, 200);
-        prevHand.setBackground(Color.gray);
         for(Card card : gamestate.getPrevHandCards()){
             JLabel card1 = new JLabel(card.toString());
             card1.setFont(new Font("Courier New", Font.PLAIN, 24));
             card1.setForeground(Color.black);
             prevHand.add(card1);
         }
-        con.add(prevHand);
 
-        window.setVisible(true);
+        con.add(prevHand);
+        prevHand.revalidate();
+        prevHand.repaint();
     }
 
     public void repaint(){
-        cardsAtBottom.revalidate();
-        cardsAtBottom.repaint();
-        prevHand.revalidate();
-        prevHand.repaint();
-
-        System.out.println("repainting ahha");
         currentHand = gamestate.players[playerID].hand;
-        System.out.println(currentHand);
-        cardsAtBottom.removeAll();
-        //draw cards on screen
-        for(int i = 0; i<currentHand.size(); i++){
-            Card theCard = currentHand.get(i);
-            int color = theCard.getColor();
-            button card = new button(i);
 
-            if(color == 0)
-                card.setBackground(Color.green);
-            else if(color == 1)
-                card.setBackground(Color.yellow);
-            else if(color == 2)
-                card.setBackground(Color.red);
-            else
-                card.setBackground(Color.blue);
-            card.setForeground(Color.white);
-            card.setText(theCard.toString());
-            card.addActionListener(new buttonListener(i));
-            card.setMaximumSize(new Dimension(50, 50));
-            cardsAtBottom.add(card);
-        }
-        con.add(cardsAtBottom);
-
-        for(Card card : gamestate.getPrevHandCards()){
-            JLabel card1 = new JLabel(card.toString());
-            card1.setFont(new Font("Courier New", Font.PLAIN, 24));
-            card1.setForeground(Color.black);
-            prevHand.add(card1);
-        }
-        con.add(prevHand);
-
-        cardsAtBottom.revalidate();
-        cardsAtBottom.repaint();
-        prevHand.revalidate();
-        prevHand.repaint();
+        repaintCardsAtBottom();
+        repaintInfoAtTop();
+        repaintPrevHand();
+        repaintMiscButtons();
     }
+
     public void setGamestate(Gamestate gamestate){
         this.gamestate = gamestate;
     }
@@ -189,17 +194,17 @@ public class GUI implements ActionListener {
         this.choosingHand = choosingHand;
     }
 
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
     }
 
-    //    public static void main(String[] args) {
-//        new GUI();
-//    }
 
+    //buttonListener for cards
     private class buttonListener implements ActionListener {
-        int i;
+        int i; //position of card in hand
 
         public buttonListener(int i){
             this.i = i;
@@ -209,16 +214,16 @@ public class GUI implements ActionListener {
         public void actionPerformed(ActionEvent e) {
 
             Card card = currentHand.get(i);
-            Card sort1 = new Card(0,-1);
-            if(playHand.contains(sort1))
-                playHand.remove(sort1);
+            Card sort1 = new Card(0,-1, 1);
+            playHand.remove(sort1);
+
             if(playHand.contains(card)){
                 playHand.remove(card);
             }
             else{
                 playHand.add(card);
             }
-            System.out.println(playHand);
+            repaintCardsAtBottom();
         }
 
     }

@@ -9,10 +9,12 @@ public class Card implements Serializable{
 	
 	private int color;
 	private int value;
+	private int version;
 	
-	public Card(int color, int value) {
+	public Card(int color, int value, int version) {
 		this.color = color;
 		this.value = value;
+		this.version = version;
 	}
 
 	public int getColor() {
@@ -52,11 +54,11 @@ public class Card implements Serializable{
 		if (o == null || getClass() != o.getClass()) return false;
 		Card card = (Card) o;
 		return color == card.color &&
-				value == card.value;
+				value == card.value && version == card.version;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(color, value);
+		return Objects.hash(color, value, version);
 	}
 }
