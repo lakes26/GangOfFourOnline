@@ -53,13 +53,12 @@ public class Main {
 
 			//while game is not over continually poll for packets
 	    	while(!gamestate.getGameOver()) {
-				System.out.println("waiting for packet");
+//				System.out.println("waiting for packet");
 				Thread.sleep(1000);
+
 	    		if(packetQueue.size() > 0) {
 		        	//parse packet for client hand played
 	    			gamestate.parsePacket(packetQueue.poll());
-					System.out.println(packetQueue.size());
-					System.out.println(gamestate.getPrevHandCards());
 
 		        	//connection handlers send out gamestate to each client
 		        	for(int i = 0; i < connections.size(); i++) {

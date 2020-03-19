@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class GUI implements ActionListener {
         play.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("play hand");
                 choosingHand = false;
             } });
         sortValue.addActionListener(new ActionListener() {
@@ -74,7 +76,6 @@ public class GUI implements ActionListener {
                 playHand.clear();
                 playHand.add(new Card(0, -1));
                 choosingHand = false;
-                playHand.clear();
             } });
         miscButtons.add(play);
         miscButtons.add(sortValue);
@@ -115,7 +116,9 @@ public class GUI implements ActionListener {
     }
 
     public void repaint(){
+
         currentHand = gamestate.players[playerID].hand;
+        System.out.println(currentHand);
         cardsAtBottom.removeAll();
         //draw cards on screen
         for(int i = 0; i<currentHand.size(); i++){
@@ -128,7 +131,6 @@ public class GUI implements ActionListener {
             cardsAtBottom.add(card);
         }
         con.add(cardsAtBottom);
-        window.setVisible(true);
     }
     public void setGamestate(Gamestate gamestate){
         this.gamestate = gamestate;
@@ -139,11 +141,11 @@ public class GUI implements ActionListener {
     }
 
     public Boolean getChoosingHand() {
-        if(choosingHand = false){
-            choosingHand = true;
-            return false;
-        }
-        return true;
+        return choosingHand;
+    }
+
+    public void setChoosingHand(Boolean choosingHand) {
+        this.choosingHand = choosingHand;
     }
 
     @Override
