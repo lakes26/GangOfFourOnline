@@ -1,6 +1,7 @@
 package game;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class Deck {
 	public ArrayList<Card> cards;
@@ -34,7 +35,7 @@ public class Deck {
 	}
 
 	public void shuffle() {
-		Collections.shuffle(this.cards);
+		Collections.shuffle(this.cards, new Random());
 	}
 	
 	public Card draw() {

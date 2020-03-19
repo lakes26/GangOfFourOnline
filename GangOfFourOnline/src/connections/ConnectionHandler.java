@@ -30,6 +30,8 @@ public class ConnectionHandler extends Thread{
 	
 	@SuppressWarnings("unchecked")
 	public void run() {
+
+		//add address to Main connections list
 		String clientAddress = clientSocket.getInetAddress().toString();
 		try {
 			System.out.println("Connection from " + clientAddress);
@@ -39,22 +41,34 @@ public class ConnectionHandler extends Thread{
 		} catch (Exception e) {
 			System.out.println("error in connection handler thread");
 		}
-		
+
+		//create new player and add to Main player list
 		this.player = new Player(ConnectionListener.getNextPlayerID());
-		ConnectionListener.incrementPlayerID();
-		
+		Main.addPlayer(this.player);
+
+		//create object I/O streams
 		try {
 			objOut = new ObjectOutputStream(outStream);
 			objIn = new ObjectInputStream(inStream);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
+		//send playerID to client
+		try {
+			objOut.writeInt(ConnectionListener.getNextPlayerID());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ConnectionListener.incrementPlayerID();
+
+		//main loop for handling client hands sent to server
 		while(active) {
 			try {
 				ArrayList<Card> cards = (ArrayList<Card>) objIn.readObject();
+				System.out.println(cards);
 				this.sendPacketToQueue(cards);
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -63,7 +77,8 @@ public class ConnectionHandler extends Thread{
 				e.printStackTrace();
 			}
 		}
-		
+
+		//end game?
 		try {
 			clientSocket.close();
 			System.out.println("disconnected " + clientAddress);
@@ -74,7 +89,7 @@ public class ConnectionHandler extends Thread{
 	
 	public void sendPacketToQueue(ArrayList<Card> cards) {
 		int sortRequest = 0;
-		if((cards.size() == 1) && cards.get(0).getValue() == -1 || cards.get(0).getValue() == -2) {
+		if((cards.size() == 1) && (cards.get(0).getValue() == -1 || cards.get(0).getValue() == -2)) {
 			sortRequest = Math.abs(cards.get(0).getValue());
 		}
 		packet = new Packet(this.player.getPlayerID(), sortRequest, cards);
@@ -84,7 +99,9 @@ public class ConnectionHandler extends Thread{
 	
 	public void sendGamestate(Gamestate gamestate) {
 		try {
+			objOut.reset();
 			objOut.writeObject(gamestate);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,6 +113,13 @@ public class ConnectionHandler extends Thread{
 
 	public void setActive(boolean active) {
 		this.active = active;
+		//end game?
+		try {
+			clientSocket.close();
+			System.out.println("disconnected ");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

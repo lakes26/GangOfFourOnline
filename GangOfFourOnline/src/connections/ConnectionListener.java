@@ -19,8 +19,9 @@ public class ConnectionListener implements Runnable {
 		}
 		
 		public void run() {
-			this.running = true;
-			while(running) {
+			//create socket connection up to 4 players
+			int i = 0;
+			while(i<4) {
 				Socket connection = null;
 				try {
 					connection = ss.accept();
@@ -31,6 +32,7 @@ public class ConnectionListener implements Runnable {
 				allAddresses.add(connection.getInetAddress());
 				ConnectionHandler ch = new ConnectionHandler(connection);
 				ch.start();
+				i++;
 			}
 		}
 		

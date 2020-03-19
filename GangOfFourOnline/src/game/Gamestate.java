@@ -1,10 +1,7 @@
 package game;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
 import connections.Packet;
 
@@ -15,6 +12,7 @@ public class Gamestate implements Serializable{
 	private int[] playerScores;
 	private int currentPlayerID;
 	private int[] prevHand = {0,0,0};
+	private List<Card> prevHandCards = new ArrayList<>();
 	private boolean clockwise = true;
 	private int lastPlayedID = -1;
 	private boolean gameOver = false;
@@ -264,6 +262,7 @@ public class Gamestate implements Serializable{
 	public boolean playCards(int playerID, ArrayList<Card> cards) {
 		int[] currentHand = this.getHandStrength(cards);
 		if(isStronger(currentHand, this.prevHand)) {
+			this.prevHandCards = cards;
 			for(int i = 0; i < cards.size(); i++) {
 				this.players[playerID].removeCard(cards.get(i));
 				this.prevHand = currentHand;
@@ -288,6 +287,7 @@ public class Gamestate implements Serializable{
 				for(int i = 0; i < 3; i++) {
 					this.prevHand[i] = 0;
 				}
+				this.prevHandCards.clear();
 				canPass = false;
 			}
 			
@@ -319,6 +319,14 @@ public class Gamestate implements Serializable{
 
 	public void setPrevHand(int[] prevHand) {
 		this.prevHand = prevHand;
+	}
+
+	public int getCurrentPlayerID() {
+		return currentPlayerID;
+	}
+
+	public List<Card> getPrevHandCards() {
+		return prevHandCards;
 	}
 }
  

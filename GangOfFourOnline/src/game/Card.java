@@ -1,6 +1,7 @@
 package game;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Card implements Serializable{
 
@@ -43,5 +44,19 @@ public class Card implements Serializable{
 			cardvalue = "Dragon";
 		
 		return "(" + cardcolor + cardvalue + ")";
-	}	
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Card card = (Card) o;
+		return color == card.color &&
+				value == card.value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(color, value);
+	}
 }
