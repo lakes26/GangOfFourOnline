@@ -22,7 +22,7 @@ public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		//create server
-		String ipAddress = "192.168.86.243";
+		String ipAddress = "localhost";
 		ServerSocket ss = new ServerSocket(LISTENING_PORT, 5, InetAddress.getByName(ipAddress));
 		
 		String systemipaddress = ""; 
