@@ -2,6 +2,7 @@ package GUI;
 
 import game.Card;
 import game.Gamestate;
+import game.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.util.List;
 public class GUI implements ActionListener {
 
     private Container con;
-    private JPanel cardsAtBottom, miscButtons, prevHand;
+    private JPanel cardsAtBottom, miscButtons, prevHand, cardsLeft;
     private JPanel infoAtTop;
     private Gamestate gamestate;
     private int playerID;
@@ -44,17 +45,56 @@ public class GUI implements ActionListener {
 
         //info at top
         infoAtTop = new JPanel();
-        infoAtTop.setBounds(0, 0, 1280, 180);
+        infoAtTop.setBounds(400, 0, 880, 100);
         infoAtTop.setBackground(Color.gray);
 
         //previous hand
-        prevHand = new JPanel();
+        prevHand = new JPanel(new GridLayout(2, 3));
         prevHand.setBounds(400, 200, 500, 200);
         prevHand.setBackground(Color.gray);
+
+        //cardsLeft
+        cardsLeft = new JPanel(new GridLayout(2, 4));
+        cardsLeft.setBounds(0, 0, 400, 100);
+        infoAtTop.setBackground(Color.gray);
 
         window.setVisible(true);
     }
 
+    public void repaint(){
+        //need this for cardsAtBottom?
+        currentHand = gamestate.players[playerID].hand;
+
+        repaintCardsAtBottom();
+        repaintInfoAtTop();
+        repaintPrevHand();
+        repaintMiscButtons();
+        repaintCardsLeft();
+    }
+
+    public void repaintCardsLeft(){
+        cardsLeft.removeAll();
+
+        for(int i = 1; i<5; i++){
+            JLabel aPlayerLabel = new JLabel("Player " + i);
+            aPlayerLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+            aPlayerLabel.setForeground(Color.black);
+            cardsLeft.add(aPlayerLabel);
+        }
+        Player[] players = gamestate.getPlayers();
+
+        for(int i = 0; i<4; i++){
+            JLabel cardsLeftLabel = new JLabel(String.valueOf(players[i].getNumCards()));
+            cardsLeftLabel.setFont(new Font("Courier New", Font.PLAIN, 24));
+            cardsLeftLabel.setForeground(Color.black);
+            cardsLeft.add(cardsLeftLabel);
+        }
+
+        con.add(cardsLeft);
+
+        cardsLeft.revalidate();
+        cardsLeft.repaint();
+    }
     public void repaintMiscButtons(){
         miscButtons.removeAll();
 
@@ -124,7 +164,7 @@ public class GUI implements ActionListener {
             card.setText(theCard.toString());
             card.setFont(new Font("Courier New", Font.PLAIN, 15));
             card.addActionListener(new buttonListener(i));
-            card.setMaximumSize(new Dimension(50, 50));
+            card.setMaximumSize(new Dimension(100, 100));
             cardsAtBottom.add(card);
         }
 
@@ -161,6 +201,18 @@ public class GUI implements ActionListener {
             JLabel card1 = new JLabel(card.toString());
             card1.setFont(new Font("Courier New", Font.PLAIN, 24));
             card1.setForeground(Color.black);
+            card1.setOpaque(true);
+
+            int color = card.getColor();
+            if (color == 0)
+                card1.setBackground(new Color(0, 100, 0));
+            else if (color == 1)
+                card1.setBackground(new Color(150, 150, 0));
+            else if (color == 2)
+                card1.setBackground(new Color(150, 0, 0));
+            else
+                card1.setBackground(new Color(0, 0, 125));
+            card1.setMaximumSize(new Dimension(200,200));
             prevHand.add(card1);
         }
 
@@ -169,14 +221,7 @@ public class GUI implements ActionListener {
         prevHand.repaint();
     }
 
-    public void repaint(){
-        currentHand = gamestate.players[playerID].hand;
 
-        repaintCardsAtBottom();
-        repaintInfoAtTop();
-        repaintPrevHand();
-        repaintMiscButtons();
-    }
 
     public void setGamestate(Gamestate gamestate){
         this.gamestate = gamestate;

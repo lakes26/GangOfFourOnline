@@ -42,22 +42,26 @@ public class Client {
                 gui.setGamestate(game);
                 gui.repaint();
 
+                //while not your turn, keep updating gamestate for other people
                 while(game.getCurrentPlayerID() != playerID){
                     game = (Gamestate) ois.readObject();
                     gui.setGamestate(game);
                     gui.repaint();
                 }
 
+                //when your turn, wait until play button is pressed
                 while(gui.getChoosingHand()){
                     Thread.sleep(100);
                 }
-                sendHand = gui.getPlayHand();
-                System.out.println("Hand sent");
+
+                //send Hand to Server
                 gui.setChoosingHand(true);
 
                 oos.reset();
-                oos.writeObject(sendHand);
+                oos.writeObject(gui.getPlayHand());
+                System.out.println("Hand sent");
 
+                //get gamestate back and check if gameOver
                 game = (Gamestate) ois.readObject();
                 gameOver = game.getGameOver();
                 Thread.sleep(100);

@@ -105,8 +105,10 @@ public class Gamestate implements Serializable{
 		int length = cards.length;
 		boolean same = true;
 		for(int i = 0; i < length - 1; i++) {
-			if(cards[i].getValue() != cards[i+1].getValue())
+			if (cards[i].getValue() != cards[i + 1].getValue()) {
 				same = false;
+				break;
+			}
 		}
 		return same;
 	}
@@ -115,8 +117,10 @@ public class Gamestate implements Serializable{
 	private boolean isStraight(Card[] cards) {
 		boolean isStraight = true;
 		for(int i = 0; i < 4; i++) {
-			if(cards[i].getValue() + 1 != cards[i+1].getValue())
+			if (cards[i].getValue() + 1 != cards[i + 1].getValue()) {
 				isStraight = false;
+				break;
+			}
 		}
 		return isStraight;
 	}
@@ -124,44 +128,36 @@ public class Gamestate implements Serializable{
 	private boolean isFlush(Card[] cards) {
 		boolean isFlush = true;
 		for(int i = 0; i < 4; i++) {
-			if(cards[i].getColor() != cards[i+1].getColor())
+			if (cards[i].getColor() != cards[i + 1].getColor()) {
 				isFlush = false;
+				break;
+			}
 		}
 		return isFlush;
 	}
 	
 	private boolean isFullHouse(Card[] cards) {
-		if(isValueSame(Arrays.copyOfRange(cards, 0, 3)) && isValueSame(Arrays.copyOfRange(cards, 3, 5))
-				|| isValueSame(Arrays.copyOfRange(cards, 0, 2)) && isValueSame(Arrays.copyOfRange(cards, 2, 5))) {
-			return true;
-		} else {
-			return false;
-		}
+		return isValueSame(Arrays.copyOfRange(cards, 0, 3)) && isValueSame(Arrays.copyOfRange(cards, 3, 5))
+				|| isValueSame(Arrays.copyOfRange(cards, 0, 2)) && isValueSame(Arrays.copyOfRange(cards, 2, 5));
 	}
 	
 	public void sortCards(Card[] cards, String key) {
 		if(key.compareToIgnoreCase("color") == 0) {
-			Arrays.sort(cards, new Comparator<Card>() {
-				@Override
-				public int compare(Card o1, Card o2) {
-					int colcmp =  Integer.compare(o1.getColor(),o2.getColor());
-					if(colcmp == 0)
-						return Integer.compare(o1.getValue(),o2.getValue());
-					else
-						return colcmp;
-				}
-		    });
+			Arrays.sort(cards, (o1, o2) -> {
+				int colcmp =  Integer.compare(o1.getColor(),o2.getColor());
+				if(colcmp == 0)
+					return Integer.compare(o1.getValue(),o2.getValue());
+				else
+					return colcmp;
+			});
 		} else if(key.compareToIgnoreCase("value") == 0){
-			Arrays.sort(cards, new Comparator<Card>() {
-				@Override
-				public int compare(Card o1, Card o2) {
-					int valcmp =  Integer.compare(o1.getValue(),o2.getValue());
-					if(valcmp == 0)
-						return Integer.compare(o1.getColor(),o2.getColor());
-					else
-						return valcmp;
-				}
-		    });
+			Arrays.sort(cards, (o1, o2) -> {
+				int valcmp = Integer.compare(o1.getValue(), o2.getValue());
+				if (valcmp == 0)
+					return Integer.compare(o1.getColor(), o2.getColor());
+				else
+					return valcmp;
+			});
 		}
 	}
 	
@@ -250,10 +246,7 @@ public class Gamestate implements Serializable{
 				isStronger = true;
 				break;
 			} else if(handStrength[i] < prevHand[i]) {
-				isStronger = false;
 				break;
-			} else if(i == 2) {
-				isStronger = false;
 			}
 		}
 		return isStronger;
@@ -263,8 +256,8 @@ public class Gamestate implements Serializable{
 		int[] currentHand = this.getHandStrength(cards);
 		if(isStronger(currentHand, this.prevHand)) {
 			this.prevHandCards = cards;
-			for(int i = 0; i < cards.size(); i++) {
-				this.players[playerID].removeCard(cards.get(i));
+			for (Card card : cards) {
+				this.players[playerID].removeCard(card);
 				this.prevHand = currentHand;
 			}
 			return true;
@@ -324,6 +317,14 @@ public class Gamestate implements Serializable{
 
 	public void setPrevHand(int[] prevHand) {
 		this.prevHand = prevHand;
+	}
+
+	public int[] getPlayerScores() {
+		return playerScores;
+	}
+
+	public Player[] getPlayers() {
+		return players;
 	}
 
 	public int getCurrentPlayerID() {
