@@ -25,6 +25,9 @@ public class Gamestate implements Serializable{
 	
 	public void startRound() {
 		for(int i = 0; i < 4; i++) {
+			if(i < 3) {
+				this.prevHand[i] = 0;
+			}
 			players[i].clearHand();
 		}
 		Deck deck = new Deck();

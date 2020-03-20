@@ -58,6 +58,7 @@ public class Player implements Serializable{
 	
 	public void clearHand() {
 		this.hand = new ArrayList<Card>();
+		this.numCards = 0;
 	}
 
 	public int getPlayerID() {

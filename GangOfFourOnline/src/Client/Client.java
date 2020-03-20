@@ -3,17 +3,52 @@ package Client;
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.Scanner;
+
 import game.*;
 import GUI.*;
 
 public class Client {
 
     public static void main(String[] args) {
+    	
+    	Scanner sc = new Scanner(System.in);
+    	boolean IPread = false;
+    	
+    	InetAddress ip = null;
+    	int port = 0;
+    	
+    	while(!IPread) {
+    		System.out.print("Enter the server IP:  ");
+    		try {
+    			
+    			String serverIP = sc.nextLine();
+    			ip = InetAddress.getByName(serverIP);
+    			System.out.println(ip);
+    			IPread = true;
+    		} catch(Exception e) {
+    			System.out.println("Invalid Address. Enter the server IP");
+    		}
+    	}
+    	
+    	boolean portRead = false;
+    	while(!portRead) {
+    		try {
+    			System.out.print("Enter the port:  ");
+    			String portString = sc.nextLine();
+    			port = Integer.parseInt(portString);
+    			portRead = true;
+    		} catch(Exception e) {
+    			System.out.println("Invalid port. Enter the port");
+    		}
+    	}
+    	
+    	sc.close();
+    	
         try
         {
-            //connect to server
-            InetAddress ip = InetAddress.getByName("localhost");
-            Socket s = new Socket(ip, 42022);
+            Socket s = new Socket(ip, port);
+            System.out.println("connected");
 
             //read and write streams
             InputStream dis = s.getInputStream();
