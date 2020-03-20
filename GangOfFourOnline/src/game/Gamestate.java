@@ -207,7 +207,7 @@ public class Gamestate implements Serializable{
 		}
 		else if(numCards >= 4 && isValueSame(cards)) {
 				return_array[0] = 8;
-				return_array[0] = numCards;
+				return_array[1] = numCards;
 				return_array[2] = cards[0].getValue();
 		}
 		else if(numCards == 5) {
