@@ -47,16 +47,16 @@ public class GUI implements ActionListener {
 
         //pass, play, buttons in middle left
         playButtons = new JPanel(new GridLayout(2,1));
-        playButtons.setBounds(0, 230, 300, 150);
+        playButtons.setBounds(0, 230, 250, 150);
 
         //previous hand in middle
         prevHand = new JPanel(new FlowLayout());
-        prevHand.setBounds(490, 120, 300, 250);
+        prevHand.setBounds(315, 175, 650, 175);
         prevHand.setBackground(Color.gray);
 
         //sort buttons in middle right
         sortButtons = new JPanel(new GridLayout(2,1));
-        sortButtons.setBounds(980, 230, 300, 150);
+        sortButtons.setBounds(1030, 230, 250, 150);
 
         //cards at bottom
         cardsAtBottom = new JPanel(new FlowLayout());
@@ -212,13 +212,13 @@ public class GUI implements ActionListener {
             int color = theCard.getColor();
             if(!playHand.contains(theCard)) {
                 if (color == 0)
-                    card.setBackground(new Color(0, 150, 0));
+                    card.setBackground(new Color(0, 125, 0));
                 else if (color == 1)
-                    card.setBackground(new Color(200, 200, 0));
+                    card.setBackground(new Color(175, 175, 0));
                 else if (color == 2)
-                    card.setBackground(new Color(175, 0, 0));
+                    card.setBackground(new Color(125, 0, 0));
                 else
-                    card.setBackground(new Color(0, 50, 150));
+                    card.setBackground(new Color(0, 50, 125));
             }
             else{
                 if (color == 0)
@@ -308,7 +308,7 @@ public class GUI implements ActionListener {
                 card1.setBackground(new Color(175, 0, 0));
             else
                 card1.setBackground(new Color(0, 50, 150));
-            card1.setPreferredSize(new Dimension(100,125));
+            card1.setPreferredSize(new Dimension(125,150));
             prevHand.add(card1);
         }
 
