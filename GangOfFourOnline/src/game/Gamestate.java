@@ -8,13 +8,18 @@ import connections.Packet;
 public class Gamestate implements Serializable{
 
 	private static final long serialVersionUID = 6996747481516062547L;
+
 	public Player[] players;
 	private int[] playerScores;
+
 	private int currentPlayerID;
+	private int lastPlayedID = -1;
+	private int roundWinner;
+
 	private int[] prevHand = {0,0,0};
 	private List<Card> prevHandCards = new ArrayList<>();
+
 	private boolean clockwise = true;
-	private int lastPlayedID = -1;
 	private boolean gameOver = false;
 
 	public Gamestate(Player[] players) {
@@ -29,11 +34,17 @@ public class Gamestate implements Serializable{
 				this.prevHand[i] = 0;
 			}
 			players[i].clearHand();
+			prevHandCards.clear();
 		}
+
 		Deck deck = new Deck();
 		deck.shuffle();
 		for(int i = 0; i < deck.getDeckSize(); i++) {
 			players[i % 4].addCard(deck.draw());
+		}
+
+		for(Player player: players){
+			player.sortHand("value");
 		}
 	}
 	
@@ -282,16 +293,18 @@ public class Gamestate implements Serializable{
 
 			//if everyone has passed
 			if(this.currentPlayerID == this.lastPlayedID || this.lastPlayedID == -1) {
-				for(int i = 0; i < 3; i++) {
-					this.prevHand[i] = 0;
-				}
-				this.prevHandCards.clear();
 				canPass = false;
 			}
 
 			//if the person passes
 			if(packet.getCardsPlayed().size() == 0 && canPass) {
 				this.changeCurrentPlayer();
+				if(this.currentPlayerID == this.lastPlayedID) {
+					for (int i = 0; i < 3; i++) {
+						this.prevHand[i] = 0;
+					}
+					this.prevHandCards.clear();
+				}
 			}
 			//else if the person plays something
 			else if(playCards(packet.getPlayerID(), packet.getCardsPlayed())) {
@@ -304,8 +317,10 @@ public class Gamestate implements Serializable{
 					} else {
 						this.startRound();
 					}
+					currentPlayerID = packet.getPlayerID();
 				}
-				this.changeCurrentPlayer();
+				else
+					this.changeCurrentPlayer();
 			}
 		}
 	}
@@ -336,6 +351,10 @@ public class Gamestate implements Serializable{
 
 	public List<Card> getPrevHandCards() {
 		return prevHandCards;
+	}
+
+	public int getLastPlayedID() {
+		return lastPlayedID;
 	}
 }
  

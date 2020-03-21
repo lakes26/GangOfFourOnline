@@ -51,7 +51,7 @@ public class GUI implements ActionListener {
 
         //previous hand in middle
         prevHand = new JPanel(new FlowLayout());
-        prevHand.setBounds(315, 175, 650, 175);
+        prevHand.setBounds(315, 175, 650, 200);
         prevHand.setBackground(Color.gray);
 
         //sort buttons in middle right
@@ -162,8 +162,12 @@ public class GUI implements ActionListener {
             //only works if it is your turn
             if(gamestate.getCurrentPlayerID() == playerID && !playHand.isEmpty()) {
                 System.out.println("Hand Played" + playHand);
+
                 Card sort1 = new Card(0, -1, 1);
+                Card sort2 = new Card(0, -2, 1);
                 playHand.remove(sort1);
+                playHand.remove(sort2);
+
                 choosingHand = false;
                 try {
                     Thread.sleep(300);
@@ -184,8 +188,6 @@ public class GUI implements ActionListener {
             if(gamestate.getCurrentPlayerID() == playerID) {
                 System.out.println("Passed");
                 playHand.clear();
-                Card sort1 = new Card(0, -1, 1);
-                playHand.remove(sort1);
                 choosingHand = false;
             }
             else{
@@ -280,6 +282,12 @@ public class GUI implements ActionListener {
     public void repaintPrevHand(){
         prevHand.removeAll();
 
+        JLabel handPlayedBy = new JLabel("Hand Played By: " + String.valueOf(gamestate.getLastPlayedID()), SwingConstants.CENTER);
+        handPlayedBy.setFont(new Font("Courier New", Font.BOLD, 20));
+        handPlayedBy.setForeground(Color.black);
+        handPlayedBy.setPreferredSize(new Dimension(650, 50));
+        prevHand.add(handPlayedBy);
+
         for(Card card : gamestate.getPrevHandCards()){
             JLabel card1 = new JLabel(card.toString(), SwingConstants.CENTER);
             int value = card.getValue();
@@ -355,8 +363,6 @@ public class GUI implements ActionListener {
         public void actionPerformed(ActionEvent e) {
 
             Card card = currentHand.get(i);
-            Card sort1 = new Card(0,-1, 1);
-            playHand.remove(sort1);
 
             if(playHand.contains(card)){
                 playHand.remove(card);
